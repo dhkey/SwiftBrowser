@@ -9,45 +9,68 @@ import SwiftUI
 import SwiftData
 import WebKit
 
-struct WebView: NSViewRepresentable {
-    let url: URL
-    
-    func makeNSView(context: Context) -> WKWebView {
-        let webView = WKWebView()
-        webView.load(URLRequest(url: url))
-        return webView
-    }
-    
-    func updateNSView(_ nsView: WKWebView, context: Context) {
-        nsView.load(URLRequest(url: url))
-    }
-}
-
 struct ContentView: View {
     
-    @State private var urlString: String = "https://www.google.com"
-    @State private var currentURL: URL = URL(string: "https://www.google.com")!
+    @State private var webView: WKWebView?
+    @State private var canGoBack: Bool = false
+    @State private var canGoForward: Bool = false
+    @State private var isLoading: Bool = false
+    @State private var urlString: String = "https://www.duckduckgo.com"
+    @State private var currentURL: URL = URL(string: "https://www.duckduckgo.com")!
     
     var body: some View {
         VStack{
-            TextField("Enter URL", text: $urlString)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onSubmit {
-                    loadURL()
-                }
+            HStack {
+                
+                Button {
+                    webView?.goBack()
+                    updateCurrentURL()
+                } label: { Image(systemName: "arrowshape.backward.fill") }.disabled(!canGoBack)
+                
+                Button {
+                    webView?.goForward()
+                    updateCurrentURL()
+                } label: { Image(systemName: "arrowshape.forward.fill") }.disabled(!canGoForward)
+                
+                Button {
+                    if isLoading {
+                        webView?.stopLoading()
+                    } else {
+                        webView?.reload()
+                    }
+                } label: { Image(systemName: "arrow.clockwise.circle") }
+                
+                TextField("Enter URL", text: $urlString)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .onSubmit {
+                        loadURL()
+                    }
+                
+                Button { loadURL() } label: { Image(systemName: "magnifyingglass") }
+            }.padding(3)
             
-            WebView(url: currentURL)
+            WebView(url: currentURL, webView: $webView,
+                    canGoBack: $canGoBack, canGoForward: $canGoForward,
+                    isLoading: $isLoading)
+        }
+    }
+    
+    private func updateCurrentURL() {
+        if let url = webView?.url{
+            currentURL = url
+            urlString = url.absoluteString
         }
     }
     
     private func loadURL() {
         var validUrlString = urlString
         if !validUrlString.hasPrefix("http://") && !validUrlString.hasPrefix("https://") {
-            validUrlString = "http://" + validUrlString
+            validUrlString = "https://" + validUrlString //TODO make proper logic of calculating connection type
         }
         if let url = URL(string: validUrlString) {
             currentURL = url
             urlString = validUrlString
+            webView?.load(URLRequest(url: currentURL))
         }
     }
 }
