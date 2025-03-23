@@ -49,9 +49,19 @@ struct ContentView: View {
                 Button { loadURL() } label: { Image(systemName: "magnifyingglass") }
             }.padding(3)
             
-            WebView(url: currentURL, webView: $webView,
-                    canGoBack: $canGoBack, canGoForward: $canGoForward,
-                    isLoading: $isLoading)
+            WebView(url: currentURL,
+                    webView: $webView,
+                    canGoBack: $canGoBack,
+                    canGoForward: $canGoForward,
+                    isLoading: $isLoading,
+                    urlDidChange: {
+                        newURL in
+                        if let url = newURL {
+                            urlString = url.absoluteString
+                            currentURL = url
+                        }
+                    }
+            )
         }
     }
     

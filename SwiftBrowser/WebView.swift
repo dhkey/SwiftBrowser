@@ -13,6 +13,7 @@ struct WebView: NSViewRepresentable {
     @Binding var canGoBack: Bool
     @Binding var canGoForward: Bool
     @Binding var isLoading: Bool
+    let urlDidChange: (URL?) -> Void
     
     func makeNSView(context: Context) -> WKWebView {
         let webView = WKWebView()
@@ -25,9 +26,7 @@ struct WebView: NSViewRepresentable {
     }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
-        if nsView.url != url {
-            nsView.load(URLRequest(url: url))
-        }
+
     }
     
     func makeCoordinator() -> Coordinator {
@@ -46,6 +45,9 @@ struct WebView: NSViewRepresentable {
             parent.canGoBack = webView.canGoBack
             parent.canGoForward = webView.canGoForward
             parent.isLoading = false
+        }
+        func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+            parent.urlDidChange(webView.url)
         }
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
             parent.isLoading = false
