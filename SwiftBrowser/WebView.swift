@@ -7,6 +7,30 @@
 import SwiftUI
 import WebKit
 
+struct WebViewWrapper: View {
+    @ObservedObject var tab: BrowserTab
+    let isActive: Bool
+    @Binding var canGoBack: Bool
+    @Binding var canGoForward: Bool
+    @Binding var isLoading: Bool
+    let urlDidChange: (URL?) -> Void
+    
+    var body: some View {
+        Group {
+            if let webView = tab.webView {
+                WebView(
+                    url: tab.url ?? URL(string: "https://www.duckduckgo.com")!,
+                    webView: Binding.constant(webView),
+                    canGoBack: $canGoBack,
+                    canGoForward: $canGoForward,
+                    isLoading: $isLoading,
+                    urlDidChange: urlDidChange
+                )
+            }
+        }
+    }
+}
+
 struct WebView: NSViewRepresentable {
     let url: URL
     @Binding var webView: WKWebView?

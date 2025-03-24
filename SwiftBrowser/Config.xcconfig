@@ -1,0 +1,8 @@
+//
+//  Config.xcconfig
+//  SwiftBrowser
+//
+//  Created by Denis Yazan on 24.03.2025.
+//
+
+HOME_URL = "www.duckduckgo.com"
