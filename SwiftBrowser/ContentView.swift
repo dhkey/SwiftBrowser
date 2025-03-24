@@ -38,14 +38,12 @@ struct ContentView: View {
                     } else {
                         webView?.reload()
                     }
-                } label: { Image(systemName: "arrow.clockwise.circle") }
-                
+                } label: {
+                    isLoading ? Image(systemName: "xmark.circle") : Image(systemName: "arrow.clockwise.circle")
+                }
                 TextField("Enter URL", text: $urlString)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .onSubmit {
-                        loadURL()
-                    }
-                
+                    .onSubmit { loadURL() }
                 Button { loadURL() } label: { Image(systemName: "magnifyingglass") }
             }.padding(3)
             

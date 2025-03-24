@@ -26,7 +26,10 @@ struct WebView: NSViewRepresentable {
     }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
-
+        DispatchQueue.main.async {
+            canGoBack = nsView.canGoBack
+            canGoForward = nsView.canGoForward
+        }
     }
     
     func makeCoordinator() -> Coordinator {
@@ -42,8 +45,6 @@ struct WebView: NSViewRepresentable {
             parent.isLoading = true
         }
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            parent.canGoBack = webView.canGoBack
-            parent.canGoForward = webView.canGoForward
             parent.isLoading = false
         }
         func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
